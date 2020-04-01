@@ -1,49 +1,72 @@
+const log = (a) => {
+  console.log(a)
+}
+
+
 module.exports = function check(str, bracketsConfig) {
-  let strArr = str.split('')
-  let cfg = bracketsConfig
-  let open = []
-  let close= []
-  let stack=[]
-  for(let i = 0;cfg.length>i;i++){
-    open.push(cfg[i][0])
-    close.push(cfg[i][1])
+  let stackArray = []
+  let openBrArray =[]
+  str = str.split("")
+/*Helping Functions*/
+  const settingArrays=(bC)=>{
+    for(let i=0;bC.length>i;i++){
+      openBrArray.push(bC[i][0])
+    }
   }
-  for(let i=0;strArr.length>i;i++){
-    if(checkSameOpCl(strArr[i],close,open)){
-      if(stack[stack.length-1]===strArr[i]){
-        stack.pop()
+
+  const compareOpenClose=(char,bC)=>{
+    for(let i=0;bC.length>i;i++){
+      if(bC[i][0]===char&&bC[i][1]===char){
+        return true
+      }
+    }
+  return false
+  }
+  
+  const isOpenBr = (char,open)=>{
+    if(open.indexOf(char)>-1){
+      return true
+    }else{
+      return false
+    }
+  }
+  
+  const matching=(topStack,char,cfgArr)=>{
+    for(let i=0;cfgArr.length>i;i++){
+      if(cfgArr[i][0]===topStack&&cfgArr[i][1]===char){
+       return true
+      }
+    }
+     return false;
+   }
+   
+/*Function WorkSpace */
+  settingArrays(bracketsConfig)
+  for (let i = 0; str.length > i; i++) {
+    if(compareOpenClose(str[i], bracketsConfig)) {
+      if(stackArray[stackArray.length-1]===str[i]){
+        stackArray.pop()
       }else{
-        stack.push(strArr[i])
+        stackArray.push(str[i])
       }
     }else{
-      if(checkOpenOrClose(strArr[i],open)){
-        stack.push(strArr[i])
+      if(isOpenBr(str[i],openBrArray)){
+        stackArray.push(str[i])
       }else{
-        if(stack.length ===0){
+        if(stackArray.length ===0){
           return false
         }
-        var topStack = stack.pop()
-        if(!match(topStack,strArr[i],cfg)){
+        if(!matching(stackArray.pop(),str[i],bracketsConfig)){
           return false
         }
       }
     }
   }
-  if(stack.length===0){return true}else{return false}
-}
-function checkSameOpCl(char,closeArr,openArr){
-  if(closeArr.indexOf(char)>-1&&openArr.indexOf(char)>-1){return true}else{false}
-}
-function checkOpenOrClose(char,openArr){
-  if(openArr.indexOf(char)>-1)
-  {return true}else{return false}
+ if(stackArray.length===0){
+   return true
+ }else{
+   return false
+ }
 }
 
-function match(topStack,char,cfgArr){
- for(let i=0;cfgArr.length>i;i++){
-   if(cfgArr[i][0]===topStack&&cfgArr[i][1]===char){
-    return true
-   }
- }
-  return false;
-}
+
